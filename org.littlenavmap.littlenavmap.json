@@ -1,0 +1,213 @@
+{
+  "id": "org.littlenavmap.littlenavmap",
+  "runtime": "org.kde.Platform",
+  "runtime-version": "5.15-25.08",
+  "sdk": "org.kde.Sdk",
+  "command": "littlenavmap",
+  "finish-args": [
+    "--socket=fallback-x11",
+    "--socket=wayland",
+    "--device=dri",
+    "--device=shm",
+    "--share=ipc",
+    "--share=network",
+    "--filesystem=xdg-documents",
+    "--filesystem=home/.local/share/Steam",
+    "--filesystem=home/.var/app/com.valvesoftware.Steam/data/Steam",
+    "--filesystem=home/.steam",
+    "--filesystem=home/snap/steam",
+    "--filesystem=home/.x-plane"
+  ],
+  "modules": [
+    {
+      "name": "littlenavmap",
+      "buildsystem": "simple",
+      "builddir": true,
+      "sources": [
+        {
+          "type": "git",
+          "url": "https://github.com/albar965/littlenavmap.git",
+          "tag": "v3.0.18",
+          "commit": "84aa62670867fb70b3ab47dd1e30b31c7e302c9f"
+        },
+        {
+          "type": "file",
+          "path": "org.littlenavmap.littlenavmap.svg",
+          "dest-filename": "org.littlenavmap.littlenavmap.svg"
+        },
+        {
+          "type": "file",
+          "path": "org.littlenavmap.littlenavmap.desktop",
+          "dest-filename": "org.littlenavmap.littlenavmap.desktop"
+        },
+        {
+          "type": "file",
+          "path": "org.littlenavmap.littlenavmap.metainfo.xml",
+          "dest-filename": "org.littlenavmap.littlenavmap.metainfo.xml"
+        },
+        {
+          "type": "archive",
+          "url": "https://github.com/albar965/littlenavmap/releases/download/v3.0.18/LittleNavmap-linux-ubuntu-24.04-3.0.18.tar.xz",
+          "sha256": "7c318c34352909897734e1d5cf76341070138f1678686b9f191a84d02693c5c3",
+          "dest": "littlenavmap-release"
+        }
+      ],
+      "build-options": {
+        "env": {
+          "MARBLE_LIB_PATH": "/app/lib",
+          "MARBLE_INC_PATH": "/app/include",
+          "ATOOLS_INC_PATH": "/app/atoolsD/atools/include",
+          "ATOOLS_LIB_PATH": "/app/atoolsD/atools/lib",
+          "ATOOLS_NO_CRASHHANDLER": "true"
+        }
+      },
+      "build-commands": [
+        "mkdir littlenavmap-build && cd littlenavmap-build && qmake ${FLATPAK_BUILDER_BUILDDIR}/littlenavmap.pro -spec linux-g++ LIBS+=-lcpptrace CONFIG+=release && make -j${FLATPAK_BUILDER_N_JOBS}"
+      ],
+      "post-install": [
+        "mkdir -p ${FLATPAK_DEST}/bin",
+        "mkdir -p ${FLATPAK_DEST}/bin/translations",
+
+        "cp -avfu ${FLATPAK_BUILDER_BUILDDIR}/littlenavmap-build/littlenavmap ${FLATPAK_DEST}/bin",
+        "cp -avfu ${FLATPAK_BUILDER_BUILDDIR}/littlenavmap-build/plugins ${FLATPAK_DEST}/bin/plugins",
+        "cp -avfu ${FLATPAK_BUILDER_BUILDDIR}/littlenavmap-build/translations/*.qm ${FLATPAK_DEST}/bin/translations",
+        "cp -avfu ${FLATPAK_BUILDER_BUILDDIR}/littlenavmap-build/help ${FLATPAK_DEST}/bin",
+        "cp -avfu ${FLATPAK_BUILDER_BUILDDIR}/littlenavmap-build/web ${FLATPAK_DEST}/bin",
+        "cp -avfu ${FLATPAK_BUILDER_BUILDDIR}/littlenavmap-build/customize ${FLATPAK_DEST}/bin",
+        "cp -avfu ${FLATPAK_BUILDER_BUILDDIR}/littlenavmap-build/data ${FLATPAK_DEST}/bin",
+        "install -D -t /app/share/icons/hicolor/scalable/apps ${FLATPAK_BUILDER_BUILDDIR}/org.littlenavmap.littlenavmap.svg",
+        "install -D -t /app/share/applications ${FLATPAK_BUILDER_BUILDDIR}/org.littlenavmap.littlenavmap.desktop",
+        "install -D -t /app/share/metainfo ${FLATPAK_BUILDER_BUILDDIR}/org.littlenavmap.littlenavmap.metainfo.xml",
+
+        "cp -avfu ${FLATPAK_BUILDER_BUILDDIR}/littlenavmap-release/little_navmap_db ${FLATPAK_DEST}/bin",
+        "cp -avfu ${FLATPAK_BUILDER_BUILDDIR}/littlenavmap-release/Little\\ Xpconnect ${FLATPAK_DEST}/bin"
+      ],
+      "modules": [
+        {
+          "name": "atools",
+          "buildsystem": "simple",
+          "sources": [
+            {
+              "type": "git",
+              "url": "https://github.com/albar965/atools.git",
+              "tag": "v4.0.18",
+              "commit": "62ad4270d9a32d8ffa253c4d22de1a5241b4c524"
+            }
+          ],
+          "build-options": {
+            "env": {
+              "DEPLOY_BASE": "/app/atools"
+            }
+          },
+          "cleanup": [ "/atoolsD" ],
+          "build-commands": [
+            "mkdir atools-build && cd atools-build && qmake ../atools.pro -spec linux-g++ CONFIG+=release && make -j${FLATPAK_BUILDER_N_JOBS} deploy"
+          ],
+          "modules": [
+            {
+              "name": "cpptrace",
+              "buildsystem": "cmake-ninja",
+              "builddir": true,
+              "config-opts": [
+                "-DCMAKE_BUILD_TYPE=RelWithDebInfo",
+                "-DCPPTRACE_USE_EXTERNAL_LIBDWARF=ON",
+                "-DCPPTRACE_USE_EXTERNAL_ZSTD=ON",
+                "-DBUILD_SHARED_LIBS=ON"
+              ],
+              "cleanup": [ "/bin", "/include", "/lib/cmake" ],
+              "sources": [
+                {
+                  "type": "git",
+                  "url": "https://github.com/jeremy-rifkin/cpptrace.git",
+                  "tag": "v1.0.4",
+                  "commit": "3db8da80111171c219ab5839905771386bee06b3"
+                }
+              ],
+              "modules": [
+                {
+                  "name": "zstd",
+                  "buildsystem": "cmake-ninja",
+                  "builddir": true,
+                  "subdir": "build/cmake",
+                  "config-opts": [
+                    "-DCMAKE_BUILD_TABLES=RelWithDebInfo",
+                    "-DZSTD_BUILD_SHARED=ON",
+                    "-DZSTD_BUILD_TESTS=OFF",
+                    "-DZSTD_BUILD_PROGRAMS=OFF",
+                    "-DZSTD_BUILD_STATIC=OFF"
+                  ],
+                  "sources": [
+                    {
+                      "type": "git",
+                      "url": "https://github.com/facebook/zstd.git",
+                      "tag": "v1.5.7",
+                      "commit": "f8745da6ff1ad1e7bab384bd1f9d742439278e99"
+                    }
+                  ],
+                  "cleanup": [ "/bin", "/include", "/share/man", "/lib/cmake", "/lib/pkgconfig" ]
+                },
+                {
+                  "name": "libdwarf",
+                  "buildsystem": "cmake-ninja",
+                  "builddir": true,
+                  "config-opts": [
+                    "-DCMAKE_BUILD_TABLES=RelWithDebInfo",
+                    "-DBUILD_DWARFDUMP=OFF",
+                    "-DBUILD_SHARED=ON"
+                  ],
+                  "cleanup": [ "/bin", "/include", "/lib/cmake", "/lib/pkgconfig" ],
+                  "sources": [
+                    {
+                      "type": "git",
+                      "url": "https://github.com/jeremy-rifkin/libdwarf-lite.git",
+                      "tag": "v2.3.1",
+                      "commit": "d06f37ed6660b324e458387d43efde3d84c9dd55"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "marble",
+          "buildsystem": "cmake-ninja",
+          "builddir": true,
+          "sources": [
+            {
+              "type": "git",
+              "url": "https://github.com/albar965/marble.git",
+              "commit": "722acf7f8d79023f6c6a761063645a1470bb3935"
+            }
+          ],
+          "cleanup": [ "/include", "/share/mime", "/share/marble", "/share/icons", "/lib/cmake", "/lib/marble" ],
+          "config-opts": [
+            "-DCMAKE_POLICY_VERSION_MINIMUM=3.5",
+            "-DCMAKE_BUILD_TYPE=RelWithDebInfo",
+            "-DSTATIC_BUILD=TRUE",
+            "-DQTONLY=TRUE",
+            "-DBUILD_MARBLE_EXAMPLES=NO",
+            "-DBUILD_INHIBIT_SCREENSAVER_PLUGIN=NO",
+            "-DBUILD_MARBLE_APPS=NO",
+            "-DBUILD_MARBLE_EXAMPLES=NO",
+            "-DBUILD_MARBLE_TESTS=NO",
+            "-DBUILD_MARBLE_TOOLS=NO",
+            "-DBUILD_TESTING=NO",
+            "-DBUILD_WITH_DBUS=NO",
+            "-DMARBLE_EMPTY_MAPTHEME=YES",
+            "-DMOBILE=NO",
+            "-DWITH_DESIGNER_PLUGIN=NO",
+            "-DWITH_Phonon=NO",
+            "-DWITH_Qt5Location=NO",
+            "-DWITH_Qt5Positioning=NO",
+            "-DWITH_Qt5SerialPort=NO",
+            "-DWITH_ZLIB=NO",
+            "-DWITH_libgps=NO",
+            "-DWITH_libshp=NO",
+            "-DWITH_libwlocate=NO"
+          ]
+        }
+      ]
+    }
+  ]
+}
