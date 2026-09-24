@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>org.littlenavmap.littlenavmap</id>
+
+  <name>Little Navmap</name>
+  <summary>A free open source flight planner, navigation tool, airport search and information system</summary>
+
+  <url type="homepage">https://littlenavmap.org</url>
+  <url type="donation">https://albar965.github.io/donate.html</url>
+  <url type="contribute">https://github.com/albar965/littlenavmap/blob/e925c1486f7657a4623dfca23c215d3c07f49201/.github/CONTRIBUTING.md</url>
+  <url type="translate">https://github.com/albar965/littlenavmap/wiki/Translating-the-Program</url>
+  <url type="vcs-browser">https://github.com/albar965/littlenavmap</url>
+
+  <developer id="org.littlenavmap">
+    <name>Alexander Barthel</name>
+  </developer>
+
+  <metadata_license>MIT</metadata_license>
+  <project_license>GPL-3.0-only</project_license>
+
+  <description>
+    <p>
+      Little Navmap is a free flight planner, navigation tool, moving map, airport search and airport information system for Flight Simulator X, Microsoft Flight Simulator 2020, Prepar3D and X-Plane.
+    </p>
+  </description>
+
+  <releases>
+    <release version="3.0.18" date="2025-11-09">
+      <url type="details">https://github.com/albar965/littlenavmap/releases/v3.0.18</url>
+      <description>
+        <p> This is a stable release of Little Navmap that fixes small issues. </p>
+        <p> Changes from 3.0.17 to 3.0.18: </p>
+        <ul>
+          <li>Adapted NAT download location to changed FAA page. Moved track URLs to track.cfg which
+            can be overridden by placing the file in the settings folder.</li>
+          <li>Added option for displaying true airspeed in other units. You can enable this in menu <code>
+            Tools</code> -&gt; <code>Aircraft Progress Display Options</code> in branch <code>True Alternate</code>.</li>
+          <li>Changed <code>File</code> -&gt; <code>Open Flight Plan or File</code>. This function
+            can now open all formats supported by Little Navmap similar to drag-and-drop of
+            files into the program window. These formats are flight plans, aircraft performance
+            (.lnmperf), GPX aircraft trails (.gpx) and window layouts (.lnmlayout).</li>
+          <li>Cleaned up layout of logbook entry edit dialog window.</li>
+          <li>Fixed centering of in procedure search tab. Now including airport when centering
+            procedures with <code>Follow selection enabled</code>.</li>
+          <li>Linux: Dropped Ubuntu 20.04 build and added build for 24.04.</li>
+          <li>MSFS 2024: Removed wrong check for recently removed path <code>StreamedPackages</code>
+            when reading MSFS 2024 data.</li>
+          <li>Now centering all shown procedures when clicking <code>Preview all procedures</code>
+            in search tab.</li>
+          <li>Now showing a warning for an invalid cruise altitude when exporting a flight plan.</li>
+          <li>Removed PACOTS tracks since the FAA DINS Query page is no longer publicly available.
+            Removed selection option for track types since only NAT is available for now.</li>
+          <li>Reworked aircraft trail. The setting in options on page <code>Map Aircraft Trail</code>
+            does now affect only the visible trail points. The number of stored trail points is
+            not affected by changing the field
+            <code>Maximum number of trail points shown</code>. Maximum number of stored points is
+            five million which is enough for several around the world trips. Keep in mind that
+            the stored points are exported when saving as GPX and not the visible part.</li>
+          <li>When adding range rings, the system now: Automatically detects and attaches to map
+            objects: When Shift+clicking on or near a waypoint, airport, or other map feature,
+            range rings now snap to that feature's position and display its identifier. Status
+            messages now show what the range rings are attached. Thanks to Justin
+            (https://github.com/6639835) for the contribution.</li>
+          <li>Fixed airport runway length filter which was not considered in the web interface.</li>
+          <li>Map grid color settings are now considered in web interface.</li>
+          <li>X-Plane: Adapted Little Xpconnect to X-Plane 12 datarefs to fix wind display on the
+            map. Little Navmap will show a warning message if you use the outdated Little
+            Xpconnect plugin. Update the plugin from Little Navmap menu <code>Tools</code>.</li>
+          <li>X-Plane: Added hint regarding the X-Plane base path in <code>Load Scenery Library</code>
+            dialog window:
+            <code>Note that the flight simulator base path is also used to detect weather files and
+            the Little Xpconnect installation path for X-Plane.</code></li>
+          <li>X-Plane: Minimum required version for Little Xpconnect is now 1.2.2. Reinstall this
+            from menu <code>Tools</code>.</li>
+          <li>macOS: Now detecting if Little Navmap runs in the Apple translocation sandbox. The
+            program will show a warning if this is detected. Extract the downloaded archive in
+            another folder than
+            <code>Downloads</code> and continue to follow the installation instructions from the
+            user manual if you see this.</li>
+          <li>Updated user manual.</li>
+          <li>Updated Windows Redistributables to latest.</li>
+          <li>Other small fixes and user interface improvements.</li>
+        </ul>
+        <p> Web UI: </p>
+        <ul>
+          <li>Fixed map vertical centering on click</li>
+          <li>Fixed widget plugins moving, resizing and bounds under certain conditions</li>
+          <li>Updated web UI iframe feature support</li>
+          <li>Clarified Web API documentation for LatLon data</li>
+        </ul>
+        <p> Translations </p>
+        <ul>
+          <li>Updated German translation.</li>
+          <li>Updated Brazilian Portuguese translation by Ricardo.</li>
+        </ul>
+      </description>
+    </release>
+  </releases>
+
+  <launchable type="desktop-id">org.littlenavmap.littlenavmap.desktop</launchable>
+  <provides>
+    <binary>littlenavmap</binary>
+  </provides>
+
+  <screenshots>
+    <screenshot type="default">
+      <image>https://albar965.github.io/assets/images/littlenavmap_airportdiagram1.jpg</image>
+    </screenshot>
+    <screenshot>
+      <image>https://albar965.github.io/assets/images/holding.jpg</image>
+    </screenshot>
+  </screenshots>
+</component>
