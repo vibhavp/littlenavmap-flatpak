@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+
+Name=Little Navmap
+Comment= A free open source flight planner, navigation tool, moving map, airport search and airport information system.
+Categories=Utility;Maps;
+
+Icon=org.littlenavmap.littlenavmap
+Exec=littlenavmap
+Terminal=false
