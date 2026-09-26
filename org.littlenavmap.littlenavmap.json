@@ -19,6 +19,15 @@
     "--filesystem=home/snap/steam",
     "--filesystem=home/.x-plane"
   ],
+  "add-extensions": {
+    "org.littlenavmap.littlenavmap.littlexpconnect": {
+      "directory": "bin/Little Xpconnect",
+      "bundle": true
+    }
+  },
+  "cleanup-commands": [
+    "mkdir -p ${FLATPAK_DEST}/bin/Little\\ Xpconnect"
+  ],
   "modules": [
     {
       "name": "littlenavmap",
@@ -81,8 +90,7 @@
         "install -D -t /app/share/applications ${FLATPAK_BUILDER_BUILDDIR}/org.littlenavmap.littlenavmap.desktop",
         "install -D -t /app/share/metainfo ${FLATPAK_BUILDER_BUILDDIR}/org.littlenavmap.littlenavmap.metainfo.xml",
 
-        "cp -avfu ${FLATPAK_BUILDER_BUILDDIR}/littlenavmap-release/little_navmap_db ${FLATPAK_DEST}/bin",
-        "cp -avfu ${FLATPAK_BUILDER_BUILDDIR}/littlenavmap-release/Little\\ Xpconnect ${FLATPAK_DEST}/bin"
+        "cp -avfu ${FLATPAK_BUILDER_BUILDDIR}/littlenavmap-release/little_navmap_db ${FLATPAK_DEST}/bin"
       ],
       "modules": [
         {
@@ -207,6 +215,171 @@
             "-DWITH_libgps=NO",
             "-DWITH_libshp=NO",
             "-DWITH_libwlocate=NO"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "littlexpconnect",
+      "buildsystem": "simple",
+      "sources": [
+        {
+          "type": "git",
+          "url": "https://github.com/albar965/littlexpconnect.git",
+          "tag": "v1.2.2",
+          "commit": "d20e93befb04e448faf30d02fc390139fd4c2407"
+        },
+        {
+          "type": "archive",
+          "url": "https://developer.x-plane.com/wp-content/plugins/code-sample-generation/sample_templates/XPSDK401.zip",
+          "sha256": "c1104e83d9b54b03d0084c1db52ee6491e5290994503e8dd2d4a0af637e2bdd7",
+          "dest": "xplane-sdk"
+        },
+        {
+          "type": "patch",
+          "path": "patches/001-littlexpconnect-link-flags.patch"
+        }
+      ],
+      "build-options": {
+        "prefix": "/app/littlexpconnect",
+        "libdir": "/app/littlexpconnect/lib",
+        "prepend-ld-library-path": "/app/littlexpconnect/lib",
+        "prepend-pkg-config-path": "/app/littlexpconnect/lib/pkgconfig",
+        "prepend-path": "/app/littlexpconnect/bin",
+        "env": {
+          "DEPLOY_BASE": "/app/bin",
+          "ATOOLS_INC_PATH": "/app/littlexpconnect/atoolsD/atools/include",
+          "ATOOLS_LIB_PATH": "/app/littlexpconnect/atoolsD/atools/lib",
+          "XPSDK_BASE": "../xplane-sdk"
+        }
+      },
+      "build-commands": [
+        "mkdir littlexpconnect-build && cd littlexpconnect-build && qmake ../littlexpconnect.pro -spec linux-g++ CONFIG+=release CONFIG+=pic && make -j${FLATPAK_BUILDER_N_JOBS} deploy"
+      ],
+      "post-install": [
+        "install -D -t ${FLATPAK_DEST}/share/licenses/${FLATPAK_ID}/XPSDK401 ${FLATPAK_BUILDER_BUILDDIR}/xplane-sdk/license.txt"
+      ],
+      "cleanup": [ "/littlexpconnect" ],
+      "modules": [
+        {
+          "name": "qt5-base-static",
+          "buildsystem": "autotools",
+          "sources": [
+            {
+              "type": "archive",
+              "url": "https://download.qt.io/archive/qt/5.15/5.15.19/single/qt-everywhere-opensource-src-5.15.19.tar.xz",
+              "sha256": "173c2326dae138bbb0d98921e9d911e55c00163d93a6db29f294b5e19ff306ae"
+            }
+          ],
+          "build-options": {
+            "prefix": "/app/littlexpconnect"
+          },
+          "config-opts": [
+            "-openssl-linked",
+            "-static",
+            "-no-strip",
+            "-prefix",
+            "/app/littlexpconnect",
+            "-archdatadir",
+            "/app/littlexpconnect/lib",
+            "-datadir",
+            "/app/littlexpconnect/lib",
+            "-opensource",
+            "-nomake",
+            "examples",
+            "-nomake",
+            "tests",
+            "-nomake",
+            "tools",
+            "-confirm-license",
+            "-skip",
+            "tools",
+            "-skip",
+            "multimedia",
+            "-skip",
+            "qtwayland",
+            "-skip",
+            "declarative",
+            "-skip",
+            "location",
+            "-skip",
+            "serialbus",
+            "-no-gui",
+            "-no-widgets",
+            "-no-dbus",
+            "-qt-zlib",
+            "-no-libpng",
+            "-no-libjpeg",
+            "-no-sqlite",
+            "-no-freetype",
+            "-no-harfbuzz",
+            "-no-icu",
+            "-no-iconv",
+            "-no-evdev",
+            "-no-accessibility",
+            "-no-opengl",
+            "-no-qpa",
+            "-no-pch",
+            "-no-kms",
+            "-no-directfb",
+            "-no-eglfs",
+            "-no-xcb",
+            "-no-cups",
+            "-no-gif",
+            "-no-tiff",
+            "-no-ico",
+            "-no-webp",
+            "-no-glib",
+            "-qt-pcre",
+            "-no-zstd",
+            "-qt-doubleconversion"
+          ],
+          "cleanup": [
+            "/littlexpconnect/bin",
+            "/littlexpconnect/lib",
+            "/littlexpconnect/include",
+            "/littlexpconnect/share"
+          ]
+        },
+        {
+          "name": "atools-littlexpconnect",
+          "buildsystem": "simple",
+          "sources": [
+            {
+              "type": "git",
+              "url": "https://github.com/albar965/atools.git",
+              "tag": "v4.0.18",
+              "commit": "62ad4270d9a32d8ffa253c4d22de1a5241b4c524"
+            }
+          ],
+          "build-options": {
+            "prefix": "/app/littlexpconnect",
+            "libdir": "/app/littlexpconnect/lib",
+            "prepend-ld-library-path": "/app/littlexpconnect/lib",
+            "prepend-pkg-config-path": "/app/littlexpconnect/lib/pkgconfig",
+            "prepend-path": "/app/littlexpconnect/bin",
+            "env": {
+              "DEPLOY_BASE": "/app/littlexpconnect/atools",
+              "ATOOLS_NO_FS": "true",
+              "ATOOLS_NO_GRIB": "true",
+              "ATOOLS_NO_GUI": "true",
+              "ATOOLS_NO_ROUTING": "true",
+              "ATOOLS_NO_SQL": "true",
+              "ATOOLS_NO_TRACK": "true",
+              "ATOOLS_NO_USERDATA": "true",
+              "ATOOLS_NO_WEATHER": "true",
+              "ATOOLS_NO_WEB": "true",
+              "ATOOLS_NO_WMM": "true",
+              "ATOOLS_NO_NAVSERVER": "true",
+              "ATOOLS_NO_CRASHHANDLER": "true",
+              "ATOOLS_NO_QT5COMPAT": "true"
+            }
+          },
+          "build-commands": [
+            "mkdir atools-build && cd atools-build && qmake ../atools.pro -spec linux-g++ CONFIG+=release CONFIG+=pic && make -j${FLATPAK_BUILDER_N_JOBS} deploy"
+          ],
+          "cleanup": [
+            "/littlexpconnect/atoolsD"
           ]
         }
       ]
