@@ -12,6 +12,7 @@
     "--share=ipc",
     "--share=network",
     "--filesystem=xdg-documents",
+    "--filesystem=/tmp",
     "--filesystem=home/.local/share/Steam",
     "--filesystem=home/.var/app/com.valvesoftware.Steam/data/Steam",
     "--filesystem=home/.steam",
@@ -75,6 +76,7 @@
         "cp -avfu ${FLATPAK_BUILDER_BUILDDIR}/littlenavmap-build/web ${FLATPAK_DEST}/bin",
         "cp -avfu ${FLATPAK_BUILDER_BUILDDIR}/littlenavmap-build/customize ${FLATPAK_DEST}/bin",
         "cp -avfu ${FLATPAK_BUILDER_BUILDDIR}/littlenavmap-build/data ${FLATPAK_DEST}/bin",
+
         "install -D -t /app/share/icons/hicolor/scalable/apps ${FLATPAK_BUILDER_BUILDDIR}/org.littlenavmap.littlenavmap.svg",
         "install -D -t /app/share/applications ${FLATPAK_BUILDER_BUILDDIR}/org.littlenavmap.littlenavmap.desktop",
         "install -D -t /app/share/metainfo ${FLATPAK_BUILDER_BUILDDIR}/org.littlenavmap.littlenavmap.metainfo.xml",
